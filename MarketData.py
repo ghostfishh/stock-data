@@ -1,34 +1,51 @@
 import yfinance as yf
 import pandas as pd
+import matplotlib.pyplot as plt
+
 
 def get_stock_data():
-    print("welcome to my stock data fetcher!")
-    print("---------------------------------")
-    
-    t = input("enter a ticker symbol (like AAPL): ")
-    tf = input("enter timeframe (1d, 5d, 1mo, 1y): ")
-    
-    print("\nfetching data...\n")
-    
-    stock = yf.Ticker(t)
-    df = stock.history(period=tf)
-    
+    print("STOCK DATA FETCHER")
+    print("=" * 40)
+
+    ticker = input("Enter ticker symbol (e.g. AAPL): ").upper()
+    timeframe = input("Enter timeframe (1d, 5d, 1mo, 6mo, 1y): ")
+
+    print("\n Fetching data...\n")
+
+    stock = yf.Ticker(ticker)
+    df = stock.history(period=timeframe)
+
     if df.empty:
-        print("no data found. maybe a bad ticker or timeframe?")
+        print("No data found. Check the ticker or timeframe.")
         return
-        
-    print("Date       | Open   | High   | Low    | Close  | Volume")
-    print("-" * 65)
-    
-    for index, row in df.iterrows():
-        d = str(index).split(" ")[0]
-        o = round(row['Open'], 2)
-        h = round(row['High'], 2)
-        l = round(row['Low'], 2)
-        c = round(row['Close'], 2)
-        v = int(row['Volume'])
-        
-        print(f"{d} | {o}\t| {h}\t| {l}\t| {c}\t| {v}")
+
+    # Company name (if available)
+    try:
+        company_name = stock.info.get("longName", ticker)
+    except:
+        company_name = ticker
+
+    latest_close = round(df["Close"].iloc[-1], 2)
+
+    print(f"Company: {company_name}")
+    print(f" Latest Close: ${latest_close}")
+    print(f" Records Returned: {len(df)}\n")
+
+    display_df = df[["Open", "High", "Low", "Close", "Volume"]].copy()
+    display_df = display_df.round(2)
+
+    print(display_df.to_string())
+
+    plt.figure(figsize=(10, 5))
+    plt.plot(df.index, df["Close"], marker="o")
+    plt.title(f"{ticker} Closing Price ({timeframe})")
+    plt.xlabel("Date")
+    plt.ylabel("Price ($)")
+    plt.grid(True)
+
+    plt.tight_layout()
+    plt.show()
+
 
 if __name__ == "__main__":
     get_stock_data()
