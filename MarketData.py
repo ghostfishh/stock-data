@@ -10,7 +10,7 @@ def get_stock_data():
     ticker = input("Enter ticker symbol (e.g. AAPL): ").upper()
     timeframe = input("Enter timeframe (1d, 5d, 1mo, 6mo, 1y): ")
 
-    print("\n Fetching data...\n")
+    print("\n🔄 Fetching data...\n")
 
     stock = yf.Ticker(ticker)
     df = stock.history(period=timeframe)
@@ -19,7 +19,7 @@ def get_stock_data():
         print("No data found. Check the ticker or timeframe.")
         return
 
-    # Company name (if available)
+
     try:
         company_name = stock.info.get("longName", ticker)
     except:
